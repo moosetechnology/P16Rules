@@ -1,15 +1,39 @@
 "
-Calcul les potentiel Enum implementés comme des liste d'attribut static.
-Calcul aussi les methodes qui utilisent plusieurs de ces attributs.
+A set of analyses for P16.
 
+This is intended as a temporary work-around to get fast results for an initial set of small analyses.
 
-Utilisation:
+## To use
+
+Copy-paste the following code in a playground and execute the analysis you want, one at a time.
+`print` will print the result of the last analysis to the Transcript.
+
 ```
-analyser := CorEnumAnalysis on: <votre modele>.
+analyser := P16RuleAnalyser on: corese.
+
 analyser findEnumsFromStatic.
+analyser print.
 analyser methodsAccessingEnums.
-analyser print
+analyser print.
+
+analyser nonTestDeadMethods.
+analyser print.
+
+analyser illNamedTestClasses.
+analyser print.
+
+analyser emptyMethods.
+analyser print.
+analyser emptyMethodsCalled.
+analyser print.
+
+analyser traceMethodsCalledElsewhere.
+analyser print.
+
+analyser libraryClasses.
+analyser print.
 ```
+
 "
 Class {
 	#name : 'P16RuleAnalyser',
