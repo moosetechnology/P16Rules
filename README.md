@@ -14,6 +14,8 @@ Must be loaded in a moose 12 image
 
 ## To use
 
+(see also `P16RuleAnalyser` class comment)
+
 ```st
 analyser := P16RuleAnalyser on: corese.
 
@@ -40,4 +42,4 @@ analyser libraryClasses.
 analyser print.
 ```
 
-Each call to `print` will print the result of the last analysis to the `Transcript` (can the be copy-pasted to your favorite editor
+Each call to `print` will print the result of the last analysis to the `Transcript` (can the be copy-pasted to your favorite editor)
