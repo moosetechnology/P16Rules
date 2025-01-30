@@ -5,7 +5,7 @@ A set of small analysis as a temporary work-around for P16 analyses
 ```st
 Metacello new
   baseline: 'P16Rules';
-  repository: 'github://moosetechnology/P16Rules';
+  repository: 'github://moosetechnology/P16Rules:main';
   onConflict: [ :ex | ex allow ];
   load.
 ```
