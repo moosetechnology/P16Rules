@@ -192,6 +192,32 @@ P16RuleAnalyser >> isTraceMethod: method [
 	^false
 ]
 
+{ #category : 'private' }
+P16RuleAnalyser >> keywordEntities: entities [
+
+	^entities select: [ :variable |
+		variable isStub not and: 
+		[ #( record var) includes: variable name ]
+	]
+]
+
+{ #category : 'api' }
+P16RuleAnalyser >> keywordVariables [
+
+	lastAnalysis := 'Keyword Variables'.
+
+	^result := (self keywordEntities: model allParameters) ,
+		(self keywordEntities: model allAttributes) ,
+		(self keywordEntities: model allLocalVariables).
+
+	
+]
+
+{ #category : 'accessing' }
+P16RuleAnalyser >> lastResult [ 
+	^result
+]
+
 { #category : 'api' }
 P16RuleAnalyser >> libraryClasses [
 
@@ -249,6 +275,12 @@ P16RuleAnalyser >> methodsAccessingEnums: collectionOfEnums [
 		do: [ :enum | enum users: (self methodsAccessingEnumValues: enum) ].
 	^collectionOfEnums reject: [ :enum | enum users isEmpty ]
 
+]
+
+{ #category : 'accessing' }
+P16RuleAnalyser >> model [
+
+	^model
 ]
 
 { #category : 'api' }
@@ -311,4 +343,17 @@ P16RuleAnalyser >> traceMethodsCalledElsewhere [
 		[ (self callersOutsideParentClass: method) isNotEmpty ]
 	].
 
+]
+
+{ #category : 'api' }
+P16RuleAnalyser >> unsusedParameters [
+
+	lastAnalysis := 'Unsused Parameters'.
+
+	^result := model allModelMethods select: [ :method |
+		method isAbstract not and: 
+		[ (method parentType isInterface not) and:
+		[ (self isEmptyMethod: method) not and: 
+		[method parameters anySatisfy: [ :param | param incomingAccesses isEmpty] ] ] ]
+	]
 ]
