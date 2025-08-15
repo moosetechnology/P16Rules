@@ -44,8 +44,9 @@ Class {
 		'result',
 		'lastAnalysis'
 	],
-	#category : 'P16-Rules',
-	#package : 'P16-Rules'
+	#category : 'P16-Rules-rules',
+	#package : 'P16-Rules',
+	#tag : 'rules'
 }
 
 { #category : 'instance creation' }
