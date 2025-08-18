@@ -2,9 +2,7 @@ Class {
 	#name : 'P16APIMapBuilder',
 	#superclass : 'HSimpleVisualizationBuilder',
 	#instVars : [
-		'nodes',
-		'nodeStyle',
-		'layers'
+		'nodeStyle'
 	],
 	#category : 'P16-Rules-API-browser',
 	#package : 'P16-Rules',
@@ -20,9 +18,8 @@ P16APIMapBuilder >> allNodes [
 { #category : 'building' }
 P16APIMapBuilder >> build [
 
-	rootNode  := HNode new
-		addAll: self allNodes ;
-		yourself.
+	self buildNodes.
+	self buildDependencies.
 
 	super build.
 
@@ -30,24 +27,48 @@ P16APIMapBuilder >> build [
 ]
 
 { #category : 'building' }
+P16APIMapBuilder >> buildDependencies [
+
+	self allNodes do: [ :hnode |
+		(self mapModel relatedEntities: hnode rawModel) do: [ :related |
+			(self ensureNodeFromEntity: related) dependencyTo: hnode
+		]
+	]
+]
+
+{ #category : 'building' }
+P16APIMapBuilder >> buildNodes [
+
+	rootNode  := HNode new
+		addAll: self allNodes ;
+		yourself.
+]
+
+{ #category : 'building' }
 P16APIMapBuilder >> ensureNodeFromEntity: anEntity [
 
-	anEntity removeCache: #highlightList.
+	^anEntity propertyNamed: #p16APIHNode ifAbsentPut: [ 
+		anEntity removeCache: #highlightList.
 
-	^anEntity propertyNamed: #p16APIHNode ifAbsentPut: [ HNode new
-		name: anEntity fullDisplayString ;
-		rawModel: anEntity ;
-		style: self nodeStyle ;
-		yourself ].
+		HNode new
+			name: anEntity fullDisplayString ;
+			rawModel: anEntity ;
+			style: self nodeStyle ;
+			yourself
+	].
 ]
 
 { #category : 'accessing - attributes' }
-P16APIMapBuilder >> findHLinkFrom: srcMethod to: tgtMethod [
+P16APIMapBuilder >> hLinkFor: association [
 
-	^srcMethod dependencies
-		detect: [ :hlink |
-			(hlink from = srcMethod) and:
-			[ hlink to = tgtMethod ] ]
+	| hFrom hTo |
+
+	hFrom := self ensureNodeFromEntity: association key.
+	hTo := self ensureNodeFromEntity: association value.
+
+	^hFrom dependencies
+			detect: [ :hlink | (hlink from = hFrom) and: [ hlink to = hTo ] ]
+
 ]
 
 { #category : 'accessing - attributes' }
@@ -81,16 +102,6 @@ P16APIMapBuilder >> highlightable [
 			yourself ]
 ]
 
-{ #category : 'initialization' }
-P16APIMapBuilder >> initialize [ 
-
-	super initialize.
-
-	nodes := Dictionary new.
-	layers := OrderedCollection new.
-	6 timesRepeat: [ layers add: OrderedCollection new ]
-]
-
 { #category : 'building' }
 P16APIMapBuilder >> layoutNodes [
 
@@ -108,6 +119,27 @@ P16APIMapBuilder >> layoutNodes [
 		alignMiddle;
 		horizontalGap: 250;
 		on: shapeLayers
+]
+
+{ #category : 'accessing - attributes' }
+P16APIMapBuilder >> linkShapes: associations [
+
+	| linkShapes |
+	
+	linkShapes := self container shapes select: #isLine.
+
+	^associations collect: [ :assoc || shapeFrom shapeTo |
+		shapeFrom := self container shapeFromModel: (self ensureNodeFromEntity: assoc key).
+		shapeTo := self container shapeFromModel: (self ensureNodeFromEntity: assoc value).
+
+		linkShapes detect: [ :link | (link from = shapeFrom) and: [ link to = shapeTo ] ]
+	]
+]
+
+{ #category : 'accessing - attributes' }
+P16APIMapBuilder >> nodeShapes: famixEntities [
+
+	^self container shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])
 ]
 
 { #category : 'accessing' }
@@ -133,6 +165,10 @@ P16APIMapBuilder >> renderLinesIn: aCanvas [
 
 { #category : 'accessing - attributes' }
 P16APIMapBuilder >> shapesFromFamixModels: famixEntities [
+	"note: both lists or sets, but we cannot use concatenation on sets :-(
+	   so we make an OrderedCollection of it"
 
-	^self container shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])
+	^(self nodeShapes: (famixEntities reject: [ :fmx | fmx isAssociation ])) ,
+	(self linkShapes: (famixEntities asOrderedCollection select: [ :fmx | fmx isAssociation ]))
+	
 ]
