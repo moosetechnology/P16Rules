@@ -14,22 +14,11 @@ Class {
 { #category : 'accessing' }
 P16APIMapBuilder >> allNodes [
 
-	^layers flatten 
-]
-
-{ #category : 'accessing - attributes' }
-P16APIMapBuilder >> ancestor: hnodeAncestor highlightList: highlightList [
-
-	| ancestorHighlights |
-	ancestorHighlights := hnodeAncestor rawModel propertyNamed: #highlightList ifAbsentPut: [ Set new ].
-	ancestorHighlights addAll: highlightList
-	
+	^self mapModel entities collect: [ :fmx | self ensureNodeFromEntity: fmx ]
 ]
 
 { #category : 'building' }
 P16APIMapBuilder >> build [
-
-	self mapModel links do: [ :link | self buildLink: link ].
 
 	rootNode  := HNode new
 		addAll: self allNodes ;
@@ -41,44 +30,7 @@ P16APIMapBuilder >> build [
 ]
 
 { #category : 'building' }
-P16APIMapBuilder >> buildClassParents: aClass layers: parentLayers [
-
-	| parentPackage |
-	parentPackage := self ensureNodeFor: aClass rawModel typeContainer inLayer: parentLayers first.
-
-	parentPackage dependencyTo: aClass.
-]
-
-{ #category : 'building' }
-P16APIMapBuilder >> buildLink: anAssociation [
-
-	| src tgt |
-	src := self ensureNodeFor: anAssociation source        inLayer: self srcMethodLayer.
-	tgt := self ensureNodeFor: anAssociation target anyOne inLayer: self tgtMethodLayer.
-
-	src dependencyTo: tgt.
-
-	self buildMethodParents: src layers: { self srcClassLayer . self srcPackageLayer }.
-	self buildMethodParents: tgt layers: { self tgtClassLayer . self tgtPackageLayer }.
-
-	self highlightList: src to: tgt.
-
-]
-
-{ #category : 'building' }
-P16APIMapBuilder >> buildMethodParents: aMethod layers: parentLayers [
-
-	| parentClass |
-	parentClass := self ensureNodeFor: aMethod rawModel parentType inLayer: parentLayers first.
-
-	parentClass dependencyTo: aMethod.
-	
-	self buildClassParents: parentClass layers: parentLayers allButFirst
-
-]
-
-{ #category : 'building' }
-P16APIMapBuilder >> buildNodeFromEntity: anEntity [
+P16APIMapBuilder >> ensureNodeFromEntity: anEntity [
 
 	anEntity removeCache: #highlightList.
 
@@ -89,39 +41,18 @@ P16APIMapBuilder >> buildNodeFromEntity: anEntity [
 		yourself ].
 ]
 
-{ #category : 'building' }
-P16APIMapBuilder >> ensureNodeFor: anEntity inLayer: aLayer [
-
-	^aLayer
-		detect: [ :hnode | hnode rawModel = anEntity ]
-		ifNone: [ aLayer add: (self buildNodeFromEntity: anEntity) ]
-
-]
-
 { #category : 'accessing - attributes' }
-P16APIMapBuilder >> highlightList: srcMethod to: tgtMethod [
-	"#highlightList property in FamixEntities contains the list of HNode and HLink that should be highlighted
-	 when the mouse hover this entity"
+P16APIMapBuilder >> findHLinkFrom: srcMethod to: tgtMethod [
 
-	|  hnodeClass |
-
-	srcMethod rawModel propertyNamed: #highlightList put: { srcMethod . tgtMethod } , (self parentDependencies: srcMethod) , (self parentDependencies: tgtMethod) .
-	tgtMethod rawModel propertyNamed: #highlightList put: (srcMethod rawModel propertyNamed: #highlightList).
-
-	hnodeClass := (self hnodeParentsFor: srcMethod) anyOne.
-	self ancestor: hnodeClass highlightList: (self parentDependencies: hnodeClass).
-	self ancestor: (self hnodeParentsFor: hnodeClass) anyOne highlightList: (self hnodeParentsFor: hnodeClass).
-
-	(self hnodeParentsFor: srcMethod) do: [ :p |
-	self ancestor: p highlightList: (self parentDependencies: p).
-	self ancestor: (self hnodeParentsFor: p) anyOne highlightList: (self hnodeParentsFor: p).
-	]
+	^srcMethod dependencies
+		detect: [ :hlink |
+			(hlink from = srcMethod) and:
+			[ hlink to = tgtMethod ] ]
 ]
 
 { #category : 'accessing - attributes' }
 P16APIMapBuilder >> highlightable [
-	"this method is lazy, it only executes once and then stores the result
-	 #highlightable contains the highlighting interaction for all shapes"
+	"this method is lazy, it executes once and then stores the RSInteraction in #highlightable"
 
 	| nodeHighlightColor linkHighlightColor |
 	nodeHighlightColor := Color yellow "fromHexString: '9DD0B3'".
@@ -130,7 +61,7 @@ P16APIMapBuilder >> highlightable [
 	^highlightable ifNil: [ 
 		highlightable := RSHighlightable new
 			highlightShapes: [ :shape | 
-				self shapesFromModels: (shape model rawModel propertyNamed: #highlightList) ] ;
+				self shapesFromFamixModels: (self mapModel highlightList: shape model rawModel) ] ;
 
 			when: RSHighlightEvent do: [ :evt |
 				highlightable
@@ -150,14 +81,6 @@ P16APIMapBuilder >> highlightable [
 			yourself ]
 ]
 
-{ #category : 'accessing - attributes' }
-P16APIMapBuilder >> hnodeParentsFor: methodHNode [
-
-	^(methodHNode dependencies select: [ :dep | dep to = methodHNode ])
-		collect: [ :hlink | hlink from ]
-
-]
-
 { #category : 'initialization' }
 P16APIMapBuilder >> initialize [ 
 
@@ -173,10 +96,8 @@ P16APIMapBuilder >> layoutNodes [
 
 	| layout shapeLayers |
 
-	"self reorderLayers: { self srcPackageLayer . self srcClassLayer . self srcMethodLayer }.
-	self reorderLayers: { self tgtPackageLayer . self tgtClassLayer . self tgtMethodLayer }."
-
-	shapeLayers := layers collect: [ :layer | self container shapesFromModels: layer ].
+	shapeLayers := self mapModel layers collect: [ :layer |
+		self container shapesFromModels: (layer collect: [:fmx | fmx propertyNamed: #p16APIHNode]) ].
 
 	layout := RSVerticalLineLayout new
 		alignCenter ;yourself.
@@ -201,21 +122,6 @@ P16APIMapBuilder >> nodeStyle: anObject [
 	nodeStyle := anObject
 ]
 
-{ #category : 'accessing - attributes' }
-P16APIMapBuilder >> parentDependencies: hnode [
-
-	| incomingLinks |
-	incomingLinks := hnode dependencies select: [ :dep | dep to = hnode ].
-
-	^incomingLinks
-		ifEmpty: [ #() ]
-		ifNotEmpty: [ | parents |
-			parents := incomingLinks collect: #from.
-
-			incomingLinks , parents , (parents flatCollect: [:p | self parentDependencies: p])
-		]
-]
-
 { #category : 'building' }
 P16APIMapBuilder >> renderLinesIn: aCanvas [
 
@@ -225,53 +131,8 @@ P16APIMapBuilder >> renderLinesIn: aCanvas [
 		connectFromAll: #dependentsFromLinks
 ]
 
-{ #category : 'accessing' }
-P16APIMapBuilder >> shapesFromModels: hEntities [
+{ #category : 'accessing - attributes' }
+P16APIMapBuilder >> shapesFromFamixModels: famixEntities [
 
-	^hEntities collect: [ :each |
-		(each class = HNode)
-			ifTrue: [ self container shapeFromModel: each ]
-			ifFalse: [ self container shapes detect: [ :sh |
-					sh isLine and:
-					[ (sh model key = each from) and:
-					[ sh model value = each to ] ]
-				]
-			]
-	]
-]
-
-{ #category : 'accessing' }
-P16APIMapBuilder >> srcClassLayer [
-
-	^layers second
-]
-
-{ #category : 'accessing' }
-P16APIMapBuilder >> srcMethodLayer [
-
-	^layers third
-]
-
-{ #category : 'accessing' }
-P16APIMapBuilder >> srcPackageLayer [
-
-	^layers first
-]
-
-{ #category : 'accessing' }
-P16APIMapBuilder >> tgtClassLayer [
-
-	^layers fifth
-]
-
-{ #category : 'accessing' }
-P16APIMapBuilder >> tgtMethodLayer [
-
-	^layers fourth
-]
-
-{ #category : 'accessing' }
-P16APIMapBuilder >> tgtPackageLayer [
-
-	^layers sixth
+	^self container shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])
 ]
