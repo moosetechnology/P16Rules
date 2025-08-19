@@ -173,6 +173,24 @@ P16APIMapBuilder >> renderLinesIn: aCanvas [
 		connectFromAll: #dependentsFromLinks
 ]
 
+{ #category : 'as yet unclassified' }
+P16APIMapBuilder >> selectRelated: aShape [
+
+	| shapesToHighlight |
+	shapesToHighlight := self shapesFromFamixModels: (self mapModel highlightList: aShape model rawModel).
+
+	self container setSelectedShapes: shapesToHighlight
+]
+
+{ #category : 'as yet unclassified' }
+P16APIMapBuilder >> selectRelatedTo: entity [
+
+	| shapesToHighlight |
+	shapesToHighlight := self shapesFromFamixModels: (self mapModel highlightList: entity).
+
+	self container setSelectedShapes: shapesToHighlight
+]
+
 { #category : 'accessing - attributes' }
 P16APIMapBuilder >> shapesFromFamixModels: famixEntities [
 	"note: both lists or sets, but we cannot use concatenation on sets :-(
