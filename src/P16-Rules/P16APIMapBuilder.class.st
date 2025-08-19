@@ -175,11 +175,13 @@ P16APIMapBuilder >> renderLinesIn: aCanvas [
 
 { #category : 'as yet unclassified' }
 P16APIMapBuilder >> selectRelatedTo: entity [
+	"Add to current selected shapes all shapes that are related to #entity"
 
-	| shapesToHighlight |
+	| shapesToHighlight shapesHighlighted |
+	shapesHighlighted := self container selectedShapes ifNil: [ #() ].
 	shapesToHighlight := self shapesFromFamixModels: (self mapModel highlightList: entity).
 
-	self container setSelectedShapes: shapesToHighlight
+	self container setSelectedShapes: (shapesToHighlight , shapesHighlighted)
 ]
 
 { #category : 'accessing - attributes' }
@@ -190,4 +192,16 @@ P16APIMapBuilder >> shapesFromFamixModels: famixEntities [
 	^(self nodeShapes: (famixEntities reject: [ :fmx | fmx isAssociation ])) ,
 	(self linkShapes: (famixEntities asOrderedCollection select: [ :fmx | fmx isAssociation ]))
 	
+]
+
+{ #category : 'as yet unclassified' }
+P16APIMapBuilder >> unselectRelatedTo: entity [
+	"Remove from currently selected shapes those that are related to #entity"
+
+	| shapesToUnhighlight shapesHighlighted |
+	1halt.
+	shapesHighlighted := self container selectedShapes ifNil: [ #() ].
+	shapesToUnhighlight := self shapesFromFamixModels: (self mapModel highlightList: entity).
+
+	self container setSelectedShapes: (shapesHighlighted \ shapesToUnhighlight)
 ]
