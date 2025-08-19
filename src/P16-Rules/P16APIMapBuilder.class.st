@@ -174,15 +174,6 @@ P16APIMapBuilder >> renderLinesIn: aCanvas [
 ]
 
 { #category : 'as yet unclassified' }
-P16APIMapBuilder >> selectRelated: aShape [
-
-	| shapesToHighlight |
-	shapesToHighlight := self shapesFromFamixModels: (self mapModel highlightList: aShape model rawModel).
-
-	self container setSelectedShapes: shapesToHighlight
-]
-
-{ #category : 'as yet unclassified' }
 P16APIMapBuilder >> selectRelatedTo: entity [
 
 	| shapesToHighlight |
