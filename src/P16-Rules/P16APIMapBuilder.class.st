@@ -22,6 +22,8 @@ P16APIMapBuilder >> build [
 	self buildDependencies.
 
 	super build.
+	"self container shapes do: [ :shape |
+		shape isLine ifFalse: [ shape popupText: shape model rawModel mooseName ] ]."
 
 	self layoutNodes
 ]
@@ -100,6 +102,14 @@ P16APIMapBuilder >> highlightable [
 			for: self ;
 
 			yourself ]
+]
+
+{ #category : 'initialization' }
+P16APIMapBuilder >> initialize [ 
+
+	super initialize.
+
+	self popup text: [ :hnode | hnode rawModel mooseName ]
 ]
 
 { #category : 'building' }
