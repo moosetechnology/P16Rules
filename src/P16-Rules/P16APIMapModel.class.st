@@ -18,8 +18,8 @@ P16APIMapModel >> allInvocations [
 	mooseModel ifNil: [ #() ].
 
 	^allInvocations := mooseModel allInvocations select: [ :i |
-		(i sender mooseName includesSubstring: '.corese.command.') and:
-		[ i candidates anyOne mooseName includesSubstring: '.corese.core.' ] ]
+		(i sender mooseName beginsWith: 'fr.inria.corese.command.') and:
+		[ i candidates anyOne mooseName beginsWith: 'fr.inria.corese.core.' ] ]
 
 ]
 
