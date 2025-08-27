@@ -1,3 +1,11 @@
+"
+A visualization showing API dependencies between 2 ""subsystems""
+Currently very specialized for Corese-core and Corese-command
+(see `P16APIMapModel >> #allInvocations`)
+
+Use:
+  Launch it and propagate a full corese model to it
+"
 Class {
 	#name : 'P16APIBrowser',
 	#superclass : 'MiAbstractVisualizationBrowser',
