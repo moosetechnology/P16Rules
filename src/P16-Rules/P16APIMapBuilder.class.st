@@ -78,7 +78,7 @@ P16APIMapBuilder >> highlightable [
 	"this method is lazy, it executes once and then stores the RSInteraction in #highlightable"
 
 	| nodeHighlightColor linkHighlightColor |
-	nodeHighlightColor := Color yellow "fromHexString: '9DD0B3'".
+	nodeHighlightColor := Color fromHexString: '9DD0B3'.
 	linkHighlightColor := Color red.
 
 	^highlightable ifNil: [ 
@@ -146,6 +146,12 @@ P16APIMapBuilder >> linkShapes: associations [
 	]
 ]
 
+{ #category : 'accessing' }
+P16APIMapBuilder >> modelForShape: aShape [
+
+	^aShape model rawModel
+]
+
 { #category : 'accessing - attributes' }
 P16APIMapBuilder >> nodeShapes: famixEntities [
 
@@ -173,7 +179,7 @@ P16APIMapBuilder >> renderLinesIn: aCanvas [
 		connectFromAll: #dependentsFromLinks
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'interactions' }
 P16APIMapBuilder >> selectRelatedTo: entity [
 	"Add to current selected shapes all shapes that are related to #entity"
 
@@ -194,12 +200,12 @@ P16APIMapBuilder >> shapesFromFamixModels: famixEntities [
 	
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'interactions' }
 P16APIMapBuilder >> unselectRelatedTo: entity [
 	"Remove from currently selected shapes those that are related to #entity"
 
 	| shapesToUnhighlight shapesHighlighted |
-	1halt.
+
 	shapesHighlighted := self container selectedShapes ifNil: [ #() ].
 	shapesToUnhighlight := self shapesFromFamixModels: (self mapModel highlightList: entity).
 
