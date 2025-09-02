@@ -6,10 +6,10 @@ Class {
 	#tag : 'API-browser'
 }
 
-{ #category : 'accessing' }
+{ #category : 'execution' }
 HUnselectRelatedMenuItem >> execute [
 
-	visualization unselectRelatedTo: shape model rawModel
+	visualization mapModel unselectRelatedTo: shape model rawModel
 ]
 
 { #category : 'accessing' }

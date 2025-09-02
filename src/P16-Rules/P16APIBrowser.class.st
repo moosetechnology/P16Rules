@@ -39,10 +39,28 @@ P16APIBrowser class >> title [
 	^ 'API explorer'
 ]
 
+{ #category : 'interactions' }
+P16APIBrowser >> addToSelection: entities [
+	"Add to currently selected shapes all shapes for entities"
+
+	| shapesToHighlight shapesHighlighted |
+
+	shapesHighlighted := self canvas selectedShapes ifNil: [ #(  ) ].
+	shapesToHighlight := self shapesFromModels: entities.
+
+	self canvas setSelectedShapes: shapesToHighlight , shapesHighlighted
+]
+
 { #category : 'testing' }
 P16APIBrowser >> canFollowEntity: anObject [
 
 	^anObject isMooseModel
+]
+
+{ #category : 'accessing' }
+P16APIBrowser >> canvas [
+
+	^mainPresenter canvas
 ]
 
 { #category : 'actions' }
@@ -64,4 +82,47 @@ P16APIBrowser >> initializePresenters [
 	mainPresenter := self class mapClass owner: self.
 	specModel browser: self.
 	self initializeLayout
+]
+
+{ #category : 'accessing' }
+P16APIBrowser >> linkShapesFromModels: associations [
+
+	| linkShapes |
+	
+	linkShapes := self canvas shapes select: #isLine.
+
+	^associations collect: [ :assoc || shapeFrom shapeTo |
+		shapeFrom := self canvas shapeFromModel: (assoc key propertyNamed: #p16APIHNode).
+		shapeTo := self canvas shapeFromModel: (assoc value propertyNamed: #p16APIHNode).
+
+		linkShapes detect: [ :link | (link from = shapeFrom) and: [ link to = shapeTo ] ]
+	]
+]
+
+{ #category : 'accessing' }
+P16APIBrowser >> nodeShapesFromModels: famixEntities [
+
+	^self canvas shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])
+]
+
+{ #category : 'interactions' }
+P16APIBrowser >> removeFromSelection: entities [
+	"Remove from currently selected shapes those representing #entities"
+
+	| shapesToUnhighlight shapesHighlighted |
+
+	shapesHighlighted := self canvas selectedShapes ifNil: [ #() ].
+	shapesToUnhighlight := self shapesFromModels: entities.
+
+	self canvas setSelectedShapes: (shapesHighlighted \ shapesToUnhighlight)
+]
+
+{ #category : 'accessing' }
+P16APIBrowser >> shapesFromModels: famixEntities [
+	"note: both lists or sets, but we cannot use concatenation on sets :-(
+	   so we make an OrderedCollection of it"
+
+	^(self nodeShapesFromModels: (famixEntities reject: [ :fmx | fmx isAssociation ])) ,
+	(self linkShapesFromModels: (famixEntities select: [ :fmx | fmx isAssociation ]))
+	
 ]

@@ -15,6 +15,12 @@ P16APIMapBuilder >> allNodes [
 	^self mapModel entities collect: [ :fmx | self ensureNodeFromEntity: fmx ]
 ]
 
+{ #category : 'accessing' }
+P16APIMapBuilder >> browser [
+
+	^mapModel browser
+]
+
 { #category : 'building' }
 P16APIMapBuilder >> build [
 
@@ -83,8 +89,7 @@ P16APIMapBuilder >> highlightable [
 
 	^highlightable ifNil: [ 
 		highlightable := RSHighlightable new
-			highlightShapes: [ :shape | 
-				self shapesFromFamixModels: (self mapModel highlightList: shape model rawModel) ] ;
+			highlightShapes: [ :shape | self shapesToHighlightFor: (self modelForShape: shape) ] ;
 
 			when: RSHighlightEvent do: [ :evt |
 				highlightable
@@ -155,7 +160,7 @@ P16APIMapBuilder >> modelForShape: aShape [
 { #category : 'accessing - attributes' }
 P16APIMapBuilder >> nodeShapes: famixEntities [
 
-	^self container shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])
+	^self canvas shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])
 ]
 
 { #category : 'accessing' }
@@ -179,17 +184,6 @@ P16APIMapBuilder >> renderLinesIn: aCanvas [
 		connectFromAll: #dependentsFromLinks
 ]
 
-{ #category : 'interactions' }
-P16APIMapBuilder >> selectRelatedTo: entity [
-	"Add to current selected shapes all shapes that are related to #entity"
-
-	| shapesToHighlight shapesHighlighted |
-	shapesHighlighted := self container selectedShapes ifNil: [ #() ].
-	shapesToHighlight := self shapesFromFamixModels: (self mapModel highlightList: entity).
-
-	self container setSelectedShapes: (shapesToHighlight , shapesHighlighted)
-]
-
 { #category : 'accessing - attributes' }
 P16APIMapBuilder >> shapesFromFamixModels: famixEntities [
 	"note: both lists or sets, but we cannot use concatenation on sets :-(
@@ -201,13 +195,7 @@ P16APIMapBuilder >> shapesFromFamixModels: famixEntities [
 ]
 
 { #category : 'interactions' }
-P16APIMapBuilder >> unselectRelatedTo: entity [
-	"Remove from currently selected shapes those that are related to #entity"
+P16APIMapBuilder >> shapesToHighlightFor: anEntity [
 
-	| shapesToUnhighlight shapesHighlighted |
-
-	shapesHighlighted := self container selectedShapes ifNil: [ #() ].
-	shapesToUnhighlight := self shapesFromFamixModels: (self mapModel highlightList: entity).
-
-	self container setSelectedShapes: (shapesHighlighted \ shapesToUnhighlight)
+	^self shapesFromFamixModels: (self mapModel highlightList: anEntity)
 ]

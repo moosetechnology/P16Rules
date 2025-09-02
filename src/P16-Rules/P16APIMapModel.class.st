@@ -218,6 +218,14 @@ P16APIMapModel >> relatedEntities: anEntity [
 	^#()
 ]
 
+{ #category : 'interactions' }
+P16APIMapModel >> selectRelatedTo: anEntity [
+	"Add to currently selected shapes all shapes related to anEntity"
+
+	browser addToSelection:	(self highlightList: anEntity) asOrderedCollection.
+
+]
+
 { #category : 'settings' }
 P16APIMapModel >> settings [
 
@@ -299,4 +307,11 @@ P16APIMapModel >> tgtPackageHighlightList: anEntity [
 P16APIMapModel >> tgtPackageLayer [
 
 	^layers sixth
+]
+
+{ #category : 'interactions' }
+P16APIMapModel >> unselectRelatedTo: anEntity [
+	"unselect entities related to anEntity"
+
+	browser removeFromSelection: (self highlightList: anEntity) asOrderedCollection
 ]

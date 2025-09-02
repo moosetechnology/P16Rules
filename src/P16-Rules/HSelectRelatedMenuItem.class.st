@@ -9,10 +9,7 @@ Class {
 { #category : 'execution' }
 HSelectRelatedMenuItem >> execute [
 
-	| highlightList |
-	highlightList := (visualization modelForShape: shape) propertyNamed: #p16APIHNode.
-
-	visualization container setSelectedShapes: shape incomingShapes
+	visualization mapModel selectRelatedTo: shape model rawModel
 ]
 
 { #category : 'execution' }
