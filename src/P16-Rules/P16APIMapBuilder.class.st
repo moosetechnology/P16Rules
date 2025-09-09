@@ -143,12 +143,20 @@ P16APIMapBuilder >> linkShapes: associations [
 	
 	linkShapes := self container shapes select: #isLine.
 
-	^associations collect: [ :assoc || shapeFrom shapeTo |
-		shapeFrom := self container shapeFromModel: (self ensureNodeFromEntity: assoc key).
-		shapeTo := self container shapeFromModel: (self ensureNodeFromEntity: assoc value).
+	^associations
+		collect: [ :assoc || shapeFrom shapeTo |
+			shapeFrom := self container shapeFromModel: (self ensureNodeFromEntity: assoc key).
+			shapeTo := self container shapeFromModel: (self ensureNodeFromEntity: assoc value).
 
-		linkShapes detect: [ :link | (link from = shapeFrom) and: [ link to = shapeTo ] ]
-	]
+			(shapeFrom isNotNil and: [ shapeTo isNotNil ])
+				ifTrue: [
+					linkShapes
+						detect: [ :link | (link from = shapeFrom) and: [ link to = shapeTo ] ]
+						ifNone: [  ]
+				]
+				ifFalse: [ nil ]
+		]
+		thenReject: #isNil
 ]
 
 { #category : 'accessing' }
