@@ -55,15 +55,14 @@ P16APIMapBuilder >> buildNodes [
 { #category : 'building' }
 P16APIMapBuilder >> ensureNodeFromEntity: anEntity [
 
-	^anEntity propertyNamed: #p16APIHNode ifAbsentPut: [ 
-		anEntity removeCache: #highlightList.
+	^ anEntity cacheAt: #p16APIHNode ifAbsentPut: [
+			  anEntity removeCache: #highlightList.
 
-		HNode new
-			name: anEntity fullDisplayString ;
-			rawModel: anEntity ;
-			style: self nodeStyle ;
-			yourself
-	].
+			  HNode new
+				  name: anEntity fullDisplayString;
+				  rawModel: anEntity;
+				  style: self nodeStyle;
+				  yourself ]
 ]
 
 { #category : 'accessing - attributes' }
@@ -121,14 +120,15 @@ P16APIMapBuilder >> initialize [
 P16APIMapBuilder >> layoutNodes [
 
 	| layout shapeLayers |
-
 	shapeLayers := self mapModel layers collect: [ :layer |
-		self container shapesFromModels: (layer collect: [:fmx | fmx propertyNamed: #p16APIHNode]) ].
+			               self container shapesFromModels:
+				               (layer collect: [ :fmx | fmx cacheAt: #p16APIHNode ]) ].
 
 	layout := RSVerticalLineLayout new
-		alignCenter ;yourself.
+		          alignCenter;
+		          yourself.
 
-	shapeLayers do: [ :sl | layout	on: sl ].
+	shapeLayers do: [ :sl | layout on: sl ].
 
 	RSHorizontalLineLayout new
 		alignMiddle;
@@ -168,7 +168,8 @@ P16APIMapBuilder >> modelForShape: aShape [
 { #category : 'accessing - attributes' }
 P16APIMapBuilder >> nodeShapes: famixEntities [
 
-	^self canvas shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])
+	^ self canvas shapesFromModels:
+		  (famixEntities collect: [ :fmx | fmx cacheAt: #p16APIHNode ])
 ]
 
 { #category : 'accessing' }
