@@ -54,7 +54,7 @@ P16APIBrowser >> addToSelection: entities [
 { #category : 'testing' }
 P16APIBrowser >> canFollowEntity: anObject [
 
-	^anObject isMooseModel
+	^anObject isMooseObject
 ]
 
 { #category : 'accessing' }
@@ -67,6 +67,7 @@ P16APIBrowser >> canvas [
 P16APIBrowser >> followEntity: anEntity [
 
 	| mooseModel |
+
 	mooseModel := self getMooseModel: anEntity.
 	super followEntity: mooseModel.
 	self model mooseModel: mooseModel
@@ -74,8 +75,6 @@ P16APIBrowser >> followEntity: anEntity [
 
 { #category : 'accessing' }
 P16APIBrowser >> getMooseModel: aMooseObject [
-
-	aMooseObject isMooseObject ifFalse: [ Error signal: 'Got something that is not a mooseObject' ].
 
 	aMooseObject isMooseModel ifTrue: [ ^aMooseObject ].
 	aMooseObject isCollection  ifTrue: [ ^aMooseObject anyOne mooseModel ].
