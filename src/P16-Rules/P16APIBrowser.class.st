@@ -66,8 +66,20 @@ P16APIBrowser >> canvas [
 { #category : 'actions' }
 P16APIBrowser >> followEntity: anEntity [
 
-	"super followEntity: anEntity."
-	self model mooseModel: anEntity
+	| mooseModel |
+	mooseModel := self getMooseModel: anEntity.
+	super followEntity: mooseModel.
+	self model mooseModel: mooseModel
+]
+
+{ #category : 'accessing' }
+P16APIBrowser >> getMooseModel: aMooseObject [
+
+	aMooseObject isMooseObject ifFalse: [ Error signal: 'Got something that is not a mooseObject' ].
+
+	aMooseObject isMooseModel ifTrue: [ ^aMooseObject ].
+	aMooseObject isCollection  ifTrue: [ ^aMooseObject anyOne mooseModel ].
+	^aMooseObject mooseModel
 ]
 
 { #category : 'initialization' }
