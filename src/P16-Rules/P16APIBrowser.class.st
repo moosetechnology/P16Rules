@@ -155,13 +155,19 @@ P16APIBrowser >> updateTags [
 
 	mainPresenter currentCanvas shapes do: [ :sh |
 		sh isLine ifFalse: [
-			sh model rawModel isTagged ifTrue: [
+			sh model rawModel isTagged
+			ifTrue: [
 				(sh nodes noneSatisfy: [:node | node class = RSCircle ]) ifTrue: [
 					sh add: (RSCircle new
 						color: sh model rawModel tags first color;
 						radius: 7;
 						yourself)
 				]
+			]
+			ifFalse: [
+				sh nodes 
+					detect: [:node | node class = RSCircle ]
+					ifFound: [ :circleShape | sh removeShape: circleShape ]
 			]
 		]
 	]
