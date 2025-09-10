@@ -1,3 +1,14 @@
+"
+I import a Jacoco reaport and mark the covered methods with a given tag
+
+use:
+```
+P16JacocoImporter new
+	mooseModel: aModel ;
+	tagName: aString ;
+	on: '/path/to/jacoco-report.xml'
+```
+"
 Class {
 	#name : 'P16JacocoImporter',
 	#superclass : 'Object',
