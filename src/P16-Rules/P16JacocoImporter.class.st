@@ -22,24 +22,42 @@ Class {
 }
 
 { #category : 'run' }
-P16JacocoImporter >> findMethodNamed: fullyQualifiedName [
+P16JacocoImporter >> findChildNamed: name line: lineno in: entity [
+	"if #entity is not a class, the child is not a method and the name alone is enough to identify it
+	 For methods we use line number to help"
+
+	entity isClass ifFalse: [
+		^entity children
+			detect: [ :c | c name = name ]
+			ifNone: [ nil ]
+	].
+
+	"too lazy to do it now :-("
+	^entity children
+		detect: [ :c | c name = name ]
+		ifNone: [ nil ]
+]
+
+{ #category : 'run' }
+P16JacocoImporter >> findMethodNamed: methodIdentifier [
 
 	| path root |
-	path := ($/ split: fullyQualifiedName).
+	path := ($/ split: methodIdentifier key).
 	root := mooseModel entityNamed: path first ifAbsent: [ ^nil ].
 	path removeFirst.
-	^self findPath: path in: root
+	^self findPath: path line: methodIdentifier value in: root
 	
 ]
 
 { #category : 'run' }
-P16JacocoImporter >> findPath: path in: entity [
+P16JacocoImporter >> findPath: path line: lineno in: entity [
 
 	| child |
 	path ifEmpty: [ ^entity ].
-	child := entity children detect: [ :c | c name = path first ] ifNone: [^nil].
+	child := self findChildNamed: path first line: lineno in: entity.
+	child ifNil: [ ^nil ].
 	path removeFirst.
-	^self findPath: path in: child
+	^self findPath: path line: lineno in: child
 
 ]
 

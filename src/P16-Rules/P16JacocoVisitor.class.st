@@ -50,7 +50,9 @@ P16JacocoVisitor >> visitElement: anElement [
 { #category : 'visiting' }
 P16JacocoVisitor >> visitMethod: aMethodNode [
 
-	methods add: parentClass , '/' , (self get: aMethodNode attribute: 'name').
+	| methodName |
+	methodName := parentClass , '/' , (self get: aMethodNode attribute: 'name').
+	methods add: (methodName -> (self get: aMethodNode attribute: 'line') asInteger).
 
 ]
 
