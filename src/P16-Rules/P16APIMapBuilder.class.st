@@ -208,3 +208,9 @@ P16APIMapBuilder >> shapesToHighlightFor: anEntity [
 
 	^self shapesFromFamixModels: (self mapModel highlightList: anEntity)
 ]
+
+{ #category : 'interactions' }
+P16APIMapBuilder >> updateTags [ 
+
+	self browser updateTags 
+]
