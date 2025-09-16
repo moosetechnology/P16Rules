@@ -119,18 +119,6 @@ P16APIBrowser >> linkShapesFromModels: associations [
 ]
 
 { #category : 'accessing' }
-P16APIBrowser >> miSelectedItem [
-
-	^ self canvas selectedShapes reject: #isLine thenCollect: [ :shape | shape model rawModel ]
-]
-
-{ #category : 'accessing' }
-P16APIBrowser >> miSelectedItemToPropagate [
-
-	^ self miSelectedItem 
-]
-
-{ #category : 'accessing' }
 P16APIBrowser >> nodeShapesFromModels: famixEntities [
 
 	^self canvas shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])

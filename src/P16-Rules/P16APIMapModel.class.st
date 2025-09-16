@@ -202,12 +202,6 @@ P16APIMapModel >> methodRelatedEntities: anEntity [
 ]
 
 { #category : 'accessing' }
-P16APIMapModel >> miSelectedItem [
-
-	^self entities
-]
-
-{ #category : 'accessing' }
 P16APIMapModel >> mooseModel [
 
 	^ mooseModel
