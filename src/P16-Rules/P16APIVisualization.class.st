@@ -20,3 +20,11 @@ P16APIVisualization >> buildInCanvas: aCanvas [
 		yourself.
 	builder build
 ]
+
+{ #category : 'accessing' }
+P16APIVisualization >> miSelectedItem [
+
+	^ self canvas selectedShapes
+		reject: #isLine
+		thenCollect: [ :shape | shape model rawModel ]
+]

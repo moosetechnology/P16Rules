@@ -81,6 +81,12 @@ P16APIBrowser >> getMooseModel: aMooseObject [
 	^aMooseObject mooseModel
 ]
 
+{ #category : 'testing' }
+P16APIBrowser >> hasSettings [
+
+	^true
+]
+
 { #category : 'initialization' }
 P16APIBrowser >> initializeLayout [
 
@@ -99,15 +105,17 @@ P16APIBrowser >> initializePresenters [
 P16APIBrowser >> linkShapesFromModels: associations [
 
 	| linkShapes |
-	
 	linkShapes := self canvas shapes select: #isLine.
 
-	^associations collect: [ :assoc || shapeFrom shapeTo |
-		shapeFrom := self canvas shapeFromModel: (assoc key propertyNamed: #p16APIHNode).
-		shapeTo := self canvas shapeFromModel: (assoc value propertyNamed: #p16APIHNode).
+	^ associations collect: [ :assoc |
+			  | shapeFrom shapeTo |
+			  shapeFrom := self canvas shapeFromModel:
+				               (assoc key cacheAt: #p16APIHNode).
+			  shapeTo := self canvas shapeFromModel:
+				             (assoc value cacheAt: #p16APIHNode).
 
-		linkShapes detect: [ :link | (link from = shapeFrom) and: [ link to = shapeTo ] ]
-	]
+			  linkShapes detect: [ :link |
+				  link from = shapeFrom and: [ link to = shapeTo ] ] ]
 ]
 
 { #category : 'accessing' }

@@ -4,12 +4,19 @@ Class {
 	#instVars : [
 		'mooseModel',
 		'layers',
-		'allInvocations'
+		'allInvocations',
+		'settings'
 	],
 	#category : 'P16-Rules-API-browser',
 	#package : 'P16-Rules',
 	#tag : 'API-browser'
 }
+
+{ #category : 'settings' }
+P16APIMapModel >> accessedPrefix [
+
+	^ settings getItemValue: #accessedPrefix
+]
 
 { #category : 'accessing' }
 P16APIMapModel >> allInvocations [
@@ -18,8 +25,8 @@ P16APIMapModel >> allInvocations [
 	mooseModel ifNil: [ #() ].
 
 	^allInvocations := mooseModel allInvocations select: [ :i |
-		(i sender mooseName beginsWith: 'fr.inria.corese.command.') and:
-		[ i candidates anyOne mooseName beginsWith: 'fr.inria.corese.core.' ] ]
+		(self isClientEntity: i sender) and:
+		[ self isAccessedEntity: i candidates anyOne ] ]
 
 ]
 
@@ -61,6 +68,12 @@ P16APIMapModel >> classMethods: anEntity [
 P16APIMapModel >> classParents: anEntity [
 
 	^{anEntity . anEntity typeContainer}
+]
+
+{ #category : 'settings' }
+P16APIMapModel >> clientPrefix [
+
+	^ settings getItemValue: #clientPrefix
 ]
 
 { #category : 'running' }
@@ -109,6 +122,28 @@ P16APIMapModel >> initializeLayers [
 
 ]
 
+{ #category : 'settings' }
+P16APIMapModel >> initializeSettings [
+
+	settings := super initializeSettings.
+	settings
+		addItem: (MiTextSettingItem new 
+			stringValue ;
+			setValue: 'fr.inria.corese.core.' ;
+			label: 'Provider prefix' ;
+			help: 'The prefix name of accessed entities' ;
+			yourself)
+		named: #accessedPrefix ;
+
+		addItem: (MiTextSettingItem new 
+			stringValue ;
+			setValue: 'fr.inria.corese.command.' ;
+			label: 'Client prefix' ;
+			help: 'The prefix name of client entities' ;
+			yourself)
+		named: #clientPrefix
+]
+
 { #category : 'dependencies' }
 P16APIMapModel >> invocationsBetween: entities [
 
@@ -120,6 +155,20 @@ P16APIMapModel >> invocationsBetween: entities [
 		collect: [ :invok |
 			invok source -> invok target anyOne
 		]
+]
+
+{ #category : 'accessing' }
+P16APIMapModel >> isAccessedEntity: anEntity [
+
+	^anEntity mooseName beginsWith: self accessedPrefix 
+
+]
+
+{ #category : 'accessing' }
+P16APIMapModel >> isClientEntity: anEntity [
+
+	^anEntity mooseName beginsWith: self clientPrefix
+
 ]
 
 { #category : 'accessing' }
@@ -168,13 +217,7 @@ P16APIMapModel >> mooseModel [
 P16APIMapModel >> mooseModel: anObject [
 
 	mooseModel := anObject.
-
-	allInvocations := nil.
-	mooseModel entities do: [ :fmx | fmx removeCache: #p16APIHNode ].
-
-	self initializeLayers.
-
-	browser runVisualization
+	self runVisualization
 ]
 
 { #category : 'dependencies' }
@@ -218,6 +261,16 @@ P16APIMapModel >> relatedEntities: anEntity [
 	^#()
 ]
 
+{ #category : 'running' }
+P16APIMapModel >> runVisualization [
+
+	mooseModel ifNil: [ ^self ].
+	allInvocations := nil.
+	mooseModel entities do: [ :fmx | fmx removeCache: #p16APIHNode ].
+	self initializeLayers.
+	^ browser runVisualization
+]
+
 { #category : 'interactions' }
 P16APIMapModel >> selectRelatedTo: anEntity [
 	"Add to currently selected shapes all shapes related to anEntity"
@@ -229,6 +282,13 @@ P16APIMapModel >> selectRelatedTo: anEntity [
 { #category : 'settings' }
 P16APIMapModel >> settings [
 
+	^settings
+]
+
+{ #category : 'settings' }
+P16APIMapModel >> settingsChanged: aBoolean [
+
+	aBoolean ifTrue: [ self runVisualization ].
 ]
 
 { #category : 'highlighting' }
