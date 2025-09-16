@@ -121,7 +121,8 @@ P16APIBrowser >> linkShapesFromModels: associations [
 { #category : 'accessing' }
 P16APIBrowser >> nodeShapesFromModels: famixEntities [
 
-	^self canvas shapesFromModels: (famixEntities collect: [ :fmx | fmx propertyNamed: #p16APIHNode])
+	^ self canvas shapesFromModels:
+		  (famixEntities collect: [ :fmx | fmx cacheAt: #p16APIHNode ])
 ]
 
 { #category : 'interactions' }
