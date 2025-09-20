@@ -269,7 +269,7 @@ P16APIMapModel >> runVisualization [
 P16APIMapModel >> selectRelatedTo: anEntity [
 	"Add to currently selected shapes all shapes related to anEntity"
 
-	browser addToSelection:	(self highlightList: anEntity) asOrderedCollection.
+	browser addToSelection:	((self highlightList: anEntity) reject: #isAssociation).
 
 ]
 
@@ -367,5 +367,5 @@ P16APIMapModel >> tgtPackageLayer [
 P16APIMapModel >> unselectRelatedTo: anEntity [
 	"unselect entities related to anEntity"
 
-	browser removeFromSelection: (self highlightList: anEntity) asOrderedCollection
+	browser removeFromSelection: ((self highlightList: anEntity) reject: #isAssociation)
 ]
