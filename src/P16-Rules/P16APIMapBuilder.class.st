@@ -10,12 +10,6 @@ Class {
 }
 
 { #category : 'accessing' }
-P16APIMapBuilder >> allNodes [
-
-	^self mapModel entities collect: [ :fmx | self ensureNodeFromEntity: fmx ]
-]
-
-{ #category : 'accessing' }
 P16APIMapBuilder >> browser [
 
 	^mapModel browser
@@ -37,7 +31,7 @@ P16APIMapBuilder >> build [
 { #category : 'building' }
 P16APIMapBuilder >> buildDependencies [
 
-	self allNodes do: [ :hnode |
+	self ensureAllNodes do: [ :hnode |
 		(self mapModel relatedEntities: hnode rawModel) do: [ :related |
 			(self ensureNodeFromEntity: related) dependencyTo: hnode
 		]
@@ -48,8 +42,14 @@ P16APIMapBuilder >> buildDependencies [
 P16APIMapBuilder >> buildNodes [
 
 	rootNode  := HNode new
-		addAll: self allNodes ;
+		addAll: self ensureAllNodes ;
 		yourself.
+]
+
+{ #category : 'accessing' }
+P16APIMapBuilder >> ensureAllNodes [
+
+	^self mapModel entities collect: [ :fmx | self ensureNodeFromEntity: fmx ]
 ]
 
 { #category : 'building' }
