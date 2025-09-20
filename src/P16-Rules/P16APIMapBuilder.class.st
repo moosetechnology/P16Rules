@@ -47,6 +47,12 @@ P16APIMapBuilder >> buildNodes [
 ]
 
 { #category : 'accessing' }
+P16APIMapBuilder >> defaultNodeStyle [
+
+	^self browser defaultNodeStyle
+]
+
+{ #category : 'accessing' }
 P16APIMapBuilder >> ensureAllNodes [
 
 	^self mapModel entities collect: [ :fmx | self ensureNodeFromEntity: fmx ]
@@ -175,13 +181,7 @@ P16APIMapBuilder >> nodeShapes: famixEntities [
 { #category : 'accessing' }
 P16APIMapBuilder >> nodeStyle [
 
-	^ nodeStyle ifNil: [ nodeStyle := MiArchitecturalMapStyle new ]
-]
-
-{ #category : 'accessing' }
-P16APIMapBuilder >> nodeStyle: anObject [
-
-	nodeStyle := anObject
+	^ nodeStyle ifNil: [ nodeStyle := self defaultNodeStyle ]
 ]
 
 { #category : 'building' }

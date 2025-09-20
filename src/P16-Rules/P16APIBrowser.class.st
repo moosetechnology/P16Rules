@@ -63,6 +63,12 @@ P16APIBrowser >> canvas [
 	^mainPresenter canvas
 ]
 
+{ #category : 'accessing' }
+P16APIBrowser >> defaultNodeStyle [
+
+	^MiArchitecturalMapStyle new
+]
+
 { #category : 'actions' }
 P16APIBrowser >> followEntity: anEntity [
 
@@ -149,23 +155,12 @@ P16APIBrowser >> shapesFromModels: famixEntities [
 
 { #category : 'actions' }
 P16APIBrowser >> updateTags [
-
+	| styler |
+	styler := self defaultNodeStyle.
 	mainPresenter currentCanvas shapes do: [ :sh |
 		sh isLine ifFalse: [
-			sh model rawModel isTagged
-			ifTrue: [
-				(sh nodes noneSatisfy: [:node | node class = RSCircle ]) ifTrue: [
-					sh add: (RSCircle new
-						color: sh model rawModel tags first color;
-						radius: 7;
-						yourself)
-				]
-			]
-			ifFalse: [
-				sh nodes 
-					detect: [:node | node class = RSCircle ]
-					ifFound: [ :circleShape | sh removeShape: circleShape ]
-			]
+			sh resetChildren.
+			styler buildCompositeEmptyNodeIn: sh
 		]
 	]
 ]
