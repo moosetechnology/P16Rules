@@ -73,10 +73,9 @@ P16APIBrowser >> defaultNodeStyle [
 P16APIBrowser >> followEntity: anEntity [
 
 	| mooseModel |
-
 	mooseModel := self getMooseModel: anEntity.
 	super followEntity: mooseModel.
-	self model mooseModel: mooseModel
+	self specModel mooseModel: mooseModel
 ]
 
 { #category : 'accessing' }
