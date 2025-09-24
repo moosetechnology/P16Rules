@@ -12,11 +12,11 @@ Class {
 { #category : 'running' }
 P16APIVisualization >> buildInCanvas: aCanvas [
 
-	aCanvas @ RSCanvasController new noLegend. 
+	aCanvas @ RSCanvasController new noLegend.
 
 	builder := P16APIMapBuilder new
-		mapModel: owner model ;
-		container: aCanvas ;
+		mapModel: owner specModel;
+		container: aCanvas;
 		yourself.
 	builder build
 ]
