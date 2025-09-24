@@ -125,6 +125,14 @@ P16APIBrowser >> linkShapesFromModels: associations [
 ]
 
 { #category : 'accessing' }
+P16APIBrowser >> miSelectedItem [
+
+	mainPresenter ifNil: [ ^#() ].
+
+	^super miSelectedItem
+]
+
+{ #category : 'accessing' }
 P16APIBrowser >> nodeShapesFromModels: famixEntities [
 
 	^ self canvas shapesFromModels:
