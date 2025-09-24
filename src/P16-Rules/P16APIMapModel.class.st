@@ -5,17 +5,45 @@ Class {
 		'mooseModel',
 		'layers',
 		'allInvocations',
-		'settings'
+		'accessedPrefix',
+		'clientPrefix'
 	],
 	#category : 'P16-Rules-API-browser',
 	#package : 'P16-Rules',
 	#tag : 'API-browser'
 }
 
-{ #category : 'settings' }
+{ #category : 'settings management' }
+P16APIMapModel class >> defaultAccessedPrefix [
+
+	^'fr.inria...'
+]
+
+{ #category : 'settings management' }
+P16APIMapModel class >> defaultClientPrefix [
+
+	^'fr.inria...'
+]
+
+{ #category : 'settings management' }
+P16APIMapModel class >> defaultConfiguration [
+
+	^ P16APIBrowserSettingsConfiguration new
+		  accessedPrefix: self defaultAccessedPrefix ;
+		  clientPrefix: self defaultClientPrefix ;
+		  yourself
+]
+
+{ #category : 'accessing' }
 P16APIMapModel >> accessedPrefix [
 
-	^ settings getItemValue: #accessedPrefix
+	^accessedPrefix
+]
+
+{ #category : 'accessing' }
+P16APIMapModel >> accessedPrefix: aString [
+
+	accessedPrefix := aString
 ]
 
 { #category : 'accessing' }
@@ -70,10 +98,31 @@ P16APIMapModel >> classParents: anEntity [
 	^{anEntity . anEntity typeContainer}
 ]
 
-{ #category : 'settings' }
+{ #category : 'accessing' }
 P16APIMapModel >> clientPrefix [
 
-	^ settings getItemValue: #clientPrefix
+	^clientPrefix
+]
+
+{ #category : 'accessing' }
+P16APIMapModel >> clientPrefix: aString [
+
+	clientPrefix := aString
+]
+
+{ #category : 'settings management' }
+P16APIMapModel >> currentConfiguration [
+
+	^ P16APIBrowserSettingsConfiguration new
+		  accessedPrefix: self accessedPrefix ;
+		  clientPrefix: self clientPrefix ;
+		  yourself
+]
+
+{ #category : 'settings management' }
+P16APIMapModel >> defaultConfiguration [
+
+	^ self class defaultConfiguration
 ]
 
 { #category : 'running' }
@@ -97,6 +146,12 @@ P16APIMapModel >> entitiesHighlightList: anEntity [
 	^#()
 ]
 
+{ #category : 'testing' }
+P16APIMapModel >> hasSettings [
+
+	^ true
+]
+
 { #category : 'highlighting' }
 P16APIMapModel >> highlightList: anEntity [
 
@@ -105,6 +160,14 @@ P16APIMapModel >> highlightList: anEntity [
 	entities addAll: (self linksBetween: entities).
 
 	^entities
+]
+
+{ #category : 'initialization' }
+P16APIMapModel >> initialize [
+
+	super initialize.
+
+	self initializeSettings
 ]
 
 { #category : 'running' }
@@ -122,26 +185,10 @@ P16APIMapModel >> initializeLayers [
 
 ]
 
-{ #category : 'settings' }
+{ #category : 'initialization' }
 P16APIMapModel >> initializeSettings [
 
-	settings := super initializeSettings.
-	settings
-		addItem: (MiTextSettingItem new 
-			stringValue ;
-			setValue: 'fr.inria.corese.core.' ;
-			label: 'Provider prefix' ;
-			help: 'The prefix name of accessed entities' ;
-			yourself)
-		named: #accessedPrefix ;
-
-		addItem: (MiTextSettingItem new 
-			stringValue ;
-			setValue: 'fr.inria.corese.command.' ;
-			label: 'Client prefix' ;
-			help: 'The prefix name of client entities' ;
-			yourself)
-		named: #clientPrefix
+	self updateFromConfiguration: self defaultConfiguration.
 ]
 
 { #category : 'dependencies' }
@@ -273,18 +320,6 @@ P16APIMapModel >> selectRelatedTo: anEntity [
 
 ]
 
-{ #category : 'settings' }
-P16APIMapModel >> settings [
-
-	^settings
-]
-
-{ #category : 'settings' }
-P16APIMapModel >> settingsChanged: aBoolean [
-
-	aBoolean ifTrue: [ self runVisualization ].
-]
-
 { #category : 'highlighting' }
 P16APIMapModel >> srcClassHighlightList: anEntity [
 
@@ -368,4 +403,13 @@ P16APIMapModel >> unselectRelatedTo: anEntity [
 	"unselect entities related to anEntity"
 
 	browser removeFromSelection: ((self highlightList: anEntity) reject: #isAssociation)
+]
+
+{ #category : 'settings management' }
+P16APIMapModel >> updateFromConfiguration: aConfiguration [
+
+	self accessedPrefix: aConfiguration accessedPrefix.
+	self clientPrefix: aConfiguration clientPrefix.
+
+	self runVisualization
 ]
