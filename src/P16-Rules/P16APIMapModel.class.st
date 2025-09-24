@@ -211,7 +211,7 @@ P16APIMapModel >> mooseModel [
 P16APIMapModel >> mooseModel: anObject [
 
 	mooseModel := anObject.
-	self runVisualization
+	"self runVisualization" 
 ]
 
 { #category : 'dependencies' }
