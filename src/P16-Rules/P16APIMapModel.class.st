@@ -5,8 +5,8 @@ Class {
 		'mooseModel',
 		'layers',
 		'allInvocations',
-		'accessedPrefix',
-		'clientPrefix'
+		'accessedPrefixes',
+		'clientPrefixes'
 	],
 	#category : 'P16-Rules-API-browser',
 	#package : 'P16-Rules',
@@ -29,28 +29,28 @@ P16APIMapModel class >> defaultClientPrefix [
 P16APIMapModel class >> defaultConfiguration [
 
 	^ P16APIBrowserSettingsConfiguration new
-		  accessedPrefix: self defaultAccessedPrefix ;
-		  clientPrefix: self defaultClientPrefix ;
+		  accessedPrefixes: self defaultAccessedPrefix ;
+		  clientPrefixes: self defaultClientPrefix ;
 		  yourself
 ]
 
 { #category : 'accessing' }
-P16APIMapModel >> accessedPrefix [
+P16APIMapModel >> accessedPrefixes [
 
-	^accessedPrefix
+	^accessedPrefixes
 ]
 
 { #category : 'accessing' }
-P16APIMapModel >> accessedPrefix: aString [
+P16APIMapModel >> accessedPrefixes: aStringCollection [
 
-	accessedPrefix := aString
+	accessedPrefixes := aStringCollection 
 ]
 
 { #category : 'accessing' }
 P16APIMapModel >> allInvocations [
 
 	allInvocations ifNotNil: [ ^allInvocations ].
-	mooseModel ifNil: [ #() ].
+	mooseModel ifNil: [ ^#() ].
 
 	^allInvocations := mooseModel allInvocations select: [ :i |
 		(self isClientEntity: i sender) and:
@@ -99,23 +99,23 @@ P16APIMapModel >> classParents: anEntity [
 ]
 
 { #category : 'accessing' }
-P16APIMapModel >> clientPrefix [
+P16APIMapModel >> clientPrefixes [
 
-	^clientPrefix
+	^clientPrefixes
 ]
 
 { #category : 'accessing' }
-P16APIMapModel >> clientPrefix: aString [
+P16APIMapModel >> clientPrefixes: aStringCollection [
 
-	clientPrefix := aString
+	clientPrefixes := aStringCollection 
 ]
 
 { #category : 'settings management' }
 P16APIMapModel >> currentConfiguration [
 
 	^ P16APIBrowserSettingsConfiguration new
-		  accessedPrefix: self accessedPrefix ;
-		  clientPrefix: self clientPrefix ;
+		  accessedPrefixes: (Character cr join: self accessedPrefixes) ;
+		  clientPrefixes: (Character cr join: self clientPrefixes) ;
 		  yourself
 ]
 
@@ -207,14 +207,14 @@ P16APIMapModel >> invocationsBetween: entities [
 { #category : 'accessing' }
 P16APIMapModel >> isAccessedEntity: anEntity [
 
-	^anEntity mooseName beginsWith: self accessedPrefix 
+	^self accessedPrefixes anySatisfy: [ :prefix | anEntity mooseName beginsWith: prefix ]
 
 ]
 
 { #category : 'accessing' }
 P16APIMapModel >> isClientEntity: anEntity [
 
-	^anEntity mooseName beginsWith: self clientPrefix
+	^self clientPrefixes anySatisfy: [ :prefix | anEntity mooseName beginsWith: prefix ]
 
 ]
 
@@ -408,8 +408,8 @@ P16APIMapModel >> unselectRelatedTo: anEntity [
 { #category : 'settings management' }
 P16APIMapModel >> updateFromConfiguration: aConfiguration [
 
-	self accessedPrefix: aConfiguration accessedPrefix.
-	self clientPrefix: aConfiguration clientPrefix.
+	self accessedPrefixes: aConfiguration accessedPrefixes lines.
+	self clientPrefixes: aConfiguration clientPrefixes lines.
 
 	self runVisualization
 ]

@@ -11,25 +11,25 @@ Class {
 }
 
 { #category : 'accessing' }
-P16APIBrowserSettingsConfiguration >> accessedPrefix [
+P16APIBrowserSettingsConfiguration >> accessedPrefixes [
 
 	^ accessedPrefix
 ]
 
 { #category : 'accessing' }
-P16APIBrowserSettingsConfiguration >> accessedPrefix: anObject [
+P16APIBrowserSettingsConfiguration >> accessedPrefixes: anObject [
 
 	accessedPrefix := anObject
 ]
 
 { #category : 'accessing' }
-P16APIBrowserSettingsConfiguration >> clientPrefix [
+P16APIBrowserSettingsConfiguration >> clientPrefixes [
 
 	^ clientPrefix
 ]
 
 { #category : 'accessing' }
-P16APIBrowserSettingsConfiguration >> clientPrefix: anObject [
+P16APIBrowserSettingsConfiguration >> clientPrefixes: anObject [
 
 	clientPrefix := anObject
 ]
@@ -38,20 +38,20 @@ P16APIBrowserSettingsConfiguration >> clientPrefix: anObject [
 P16APIBrowserSettingsConfiguration >> settingsPresenters [
 
 	^{
-	(MiTextFieldSettingPresenter on: self)
+	(MiTextAreaSettingPresenter on: self)
 		label: 'Provider prefix' ;
-	   help: 'The prefix name of accessed entities
-ex: the fully qualified name of a package.' ;
-		text: self accessedPrefix ;
-	   whenTextChangedDo: [ :txt | self accessedPrefix: txt ] ;
+	   help: 'The prefix name of accessed entities (one prefix per line)
+ex: The fully qualified name of a package.' ;
+		text: self accessedPrefixes ;
+	   whenTextChangedDo: [ :txt | self accessedPrefixes: txt ] ;
 		yourself
 	.
-	(MiTextFieldSettingPresenter on: self)
+	(MiTextAreaSettingPresenter on: self)
 		label: 'Client prefix' ;
-	   help: 'The prefix name of client entities
-ex: the fully qualified name of a package.' ;
-		text: self clientPrefix ;
-	   whenTextChangedDo: [ :txt | self clientPrefix: txt ] ;
+	   help: 'The prefix name of client entities (one prefix per line)
+ex: The fully qualified name of a package.' ;
+		text: self clientPrefixes ;
+	   whenTextChangedDo: [ :txt | self clientPrefixes: txt ] ;
 		yourself
 	}
 ]
