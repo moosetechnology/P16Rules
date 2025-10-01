@@ -162,12 +162,18 @@ P16APIBrowser >> shapesFromModels: famixEntities [
 
 { #category : 'actions' }
 P16APIBrowser >> updateTags [
-	| styler |
+	| styler shapesSelected |
+
+	shapesSelected := self canvas selectedShapes ifNil: [ #(  ) ].
+	self canvas setSelectedShapes: RSGroup new.
+
 	styler := self defaultNodeStyle.
 	mainPresenter currentCanvas shapes do: [ :sh |
 		sh isLine ifFalse: [
 			sh resetChildren.
 			styler buildCompositeEmptyNodeIn: sh
 		]
-	]
+	].
+
+	self canvas setSelectedShapes: shapesSelected.
 ]
