@@ -257,8 +257,7 @@ P16APIMapModel >> mooseModel [
 { #category : 'accessing' }
 P16APIMapModel >> mooseModel: anObject [
 
-	mooseModel := anObject.
-	"self runVisualization" 
+	mooseModel := anObject
 ]
 
 { #category : 'dependencies' }
@@ -309,7 +308,8 @@ P16APIMapModel >> runVisualization [
 	allInvocations := nil.
 	mooseModel entities do: [ :fmx | fmx removeCache: #p16APIHNode ].
 	self initializeLayers.
-	^ browser runVisualization
+	browser runVisualization.
+	browser updateToolbar 
 ]
 
 { #category : 'interactions' }
