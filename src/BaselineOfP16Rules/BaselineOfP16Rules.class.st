@@ -13,8 +13,17 @@ BaselineOfP16Rules >> baseline: spec [
 		for: #common
 		do: [ spec blessing: #baseline.
 			spec description: 'Some analyses for P16'.
+			self defineDependencies: spec.
 			self definePackages: spec.
 			self defineGroups: spec ]
+]
+
+{ #category : 'baselines' }
+BaselineOfP16Rules >> defineDependencies: spec [
+
+	spec
+		baseline: 'XMLParser'
+		with: [ spec repository: 'github://pharo-contributions/XML-XMLParser' ]
 ]
 
 { #category : 'baselines' }
@@ -26,6 +35,5 @@ BaselineOfP16Rules >> defineGroups: spec [
 { #category : 'baselines' }
 BaselineOfP16Rules >> definePackages: spec [
 	spec
-		package: 'P16-Rules' with: [ 
-			spec repository: 'github://pharo-contributions/XML-XMLParser'  ]
+		package: #'P16-Rules' with: [ spec requires: #(XMLParser)  ]
 ]
