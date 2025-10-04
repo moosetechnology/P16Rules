@@ -264,15 +264,17 @@ P16APIMapModel >> mooseModel: anObject [
 { #category : 'dependencies' }
 P16APIMapModel >> ownershipBetween: entities [
 
-	^entities
-		collect: [ :child || childParents |
-			childParents := child parents.
-			entities
-				detect: [ :parent | (child class ~= parent class) and: [childParents includes: parent] ]
-				ifOne: [ :parent | parent -> child ]
-				ifNone: [ nil ]
-			]
-		thenReject: #isNil
+	^ entities
+		  collect: [ :child |
+				  | childParents |
+				  childParents := child containers.
+				  entities
+					  detect: [ :parent |
+						  child class ~= parent class and: [
+							  childParents includes: parent ] ]
+					  ifOne: [ :parent | parent -> child ]
+					  ifNone: [ nil ] ]
+		  thenReject: #isNil
 ]
 
 { #category : 'dependencies' }
