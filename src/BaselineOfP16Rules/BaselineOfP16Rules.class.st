@@ -26,5 +26,6 @@ BaselineOfP16Rules >> defineGroups: spec [
 { #category : 'baselines' }
 BaselineOfP16Rules >> definePackages: spec [
 	spec
-		package: 'P16-Rules'
+		package: 'P16-Rules' with: [ 
+			spec repository: 'github://pharo-contributions/XML-XMLParser'  ]
 ]
