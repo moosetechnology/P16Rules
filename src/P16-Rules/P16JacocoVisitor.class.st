@@ -49,6 +49,28 @@ P16JacocoVisitor >> get: aNode attribute: attributeName [
 
 ]
 
+{ #category : 'accessing' }
+P16JacocoVisitor >> getMethodName: aMethodNode [
+	"constructors are noted '<init>', so the name needs to be translated"
+
+	| rawName |
+	rawName := self get: aMethodNode attribute: 'name'.
+
+	^(rawName = '<init>')
+		ifTrue: [ self simpleClassName: parentClass ]
+		ifFalse: [ rawName ]
+]
+
+{ #category : 'accessing' }
+P16JacocoVisitor >> simpleClassName: classPathName [
+	"classPathName = Name of the class in the form '/package/package/class'
+	 return only the class name without packages"
+
+	| i |
+	i := classPathName lastIndexOf: $/.
+	^classPathName copyFrom: (i+1) to: classPathName size
+]
+
 { #category : 'visiting' }
 P16JacocoVisitor >> visitClass: aClassNode [
 
@@ -92,7 +114,7 @@ P16JacocoVisitor >> visitElement: anElement [
 { #category : 'visiting' }
 P16JacocoVisitor >> visitMethod: aMethodNode [
 
-	currentMethod := parentClass , '/' , (self get: aMethodNode attribute: 'name').
+	currentMethod := parentClass , '/' , (self getMethodName: aMethodNode).
 
 	super visitNodeWithElements: aMethodNode 
 ]
