@@ -27,15 +27,14 @@ P16JacocoImporter >> findChildNamed: name line: lineno in: entity [
 	 For methods we use line number to help"
 
 	entity isClass ifFalse: [
-		^entity children
-			detect: [ :c | c name = name ]
-			ifNone: [ nil ]
-	].
+			^ entity containedEntities
+				  detect: [ :c | c name = name ]
+				  ifNone: [ nil ] ].
 
 	"too lazy to do it now :-("
-	^entity children
-		detect: [ :c | c name = name ]
-		ifNone: [ nil ]
+	^ entity containedEntities
+		  detect: [ :c | c name = name ]
+		  ifNone: [ nil ]
 ]
 
 { #category : 'run' }
