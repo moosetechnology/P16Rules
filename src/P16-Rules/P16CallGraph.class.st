@@ -13,6 +13,12 @@ Class {
 }
 
 { #category : 'accessing' }
+P16CallGraph >> allMethods [
+
+	^allNodes collect: #realMethod 
+]
+
+{ #category : 'accessing' }
 P16CallGraph >> allNodes [
 
 	^ allNodes
