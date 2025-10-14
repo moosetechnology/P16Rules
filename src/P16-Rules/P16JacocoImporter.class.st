@@ -41,7 +41,7 @@ P16JacocoImporter >> findChildNamed: name line: lineno in: entity [
 P16JacocoImporter >> findMethodNamed: methodIdentifier [
 
 	| path root |
-	path := ($/ split: methodIdentifier key).
+	path := ($/ split: methodIdentifier).
 	root := mooseModel entityNamed: path first ifAbsent: [ ^nil ].
 	path removeFirst.
 	^self findPath: path line: methodIdentifier value in: root

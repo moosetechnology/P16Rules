@@ -58,7 +58,17 @@ P16JacocoVisitor >> visitClass: aClassNode [
 ]
 
 { #category : 'visiting' }
-P16JacocoVisitor >> visitCounter: aXMLElement [ 
+P16JacocoVisitor >> visitCounter: aCounterNode [
+	"Inside a method node, check if it is covered:
+	 <method name='aMethod1' ...>
+        <counter type='METHOD' missed='0' covered='1'/>
+	"
+
+	((self get: aCounterNode attribute: 'type') = 'METHOD') ifFalse: [ ^self ].
+
+	((self get: aCounterNode attribute: 'covered') = '1')
+		ifTrue: [ methods add: currentMethod ]
+
 ]
 
 { #category : 'visiting' }
@@ -82,22 +92,21 @@ P16JacocoVisitor >> visitElement: anElement [
 { #category : 'visiting' }
 P16JacocoVisitor >> visitMethod: aMethodNode [
 
-	| methodName |
-	methodName := parentClass , '/' , (self get: aMethodNode attribute: 'name').
-	methods add: (methodName -> (self get: aMethodNode attribute: 'line') asInteger).
+	currentMethod := parentClass , '/' , (self get: aMethodNode attribute: 'name').
 
+	super visitNodeWithElements: aMethodNode 
 ]
 
 { #category : 'visiting' }
 P16JacocoVisitor >> visitPackage: aPackageNode [
 
-	^ super visitNodeWithElements: aPackageNode 
+	super visitNodeWithElements: aPackageNode 
 ]
 
 { #category : 'visiting' }
 P16JacocoVisitor >> visitReport: aReportNode [
 
-	^ super visitNodeWithElements: aReportNode
+	super visitNodeWithElements: aReportNode
 ]
 
 { #category : 'visiting' }
