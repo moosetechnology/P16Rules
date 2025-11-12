@@ -4,11 +4,15 @@ Bulk editor on a Java file: comment out a collection of (dead) methods
 To use:
 - compute all dead methods in a file
 - call: `P16BulkEditor new runOn: deadMethodCollection.`
-- Output the resulting lines in a file:
+- Output the resulting lines in a file
 ```
-'someFile.java' asFileReference writeStreamDo: [ :st |
-	bulkeditor lines do: [ :line | st << line ; cr ]
-]
+bulkEditor := P16BulkEditor new.
+bulkEditor runOn: deadMethods.
+file := 'SomeFile.java' asFileReference.
+file ifExists: [ file delete ].
+file writeStreamDo: [ :st |
+	bulkEditor lines do: [ :line | st << line ; cr ]
+].
 ```
 "
 Class {
