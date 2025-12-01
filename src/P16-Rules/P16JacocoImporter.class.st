@@ -26,13 +26,7 @@ P16JacocoImporter >> findChildNamed: name line: lineno in: entity [
 	"if #entity is not a class, the child is not a method and the name alone is enough to identify it
 	 For methods we use line number to help"
 
-	entity isClass ifFalse: [
-			^ entity containedEntities
-				  detect: [ :c | c name = name ]
-				  ifNone: [ nil ] ].
-
-	"too lazy to do it now :-("
-	^ entity containedEntities
+	^ entity children
 		  detect: [ :c | c name = name ]
 		  ifNone: [ nil ]
 ]
@@ -75,10 +69,14 @@ P16JacocoImporter >> mooseModel: anObject [
 { #category : 'run' }
 P16JacocoImporter >> on: aFilename [
 
-	| visitor coveredMethods |
+	| visitor coveredMethods parser |
 	visitor := P16JacocoVisitor new.
-	coveredMethods := (XMLDOMParser parse: aFilename asFileReference contents)
+	parser := (XMLDOMParser on: aFilename asFileReference contents)
+		documentReadLimit: nil ;
+		yourself.
+	coveredMethods := parser parseDocument
 		acceptNodeVisitor: visitor.
+
 	self tagMethods: coveredMethods
 ]
 
